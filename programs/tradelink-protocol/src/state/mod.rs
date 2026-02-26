@@ -15,8 +15,8 @@ pub enum TradeState {
 #[derive(InitSpace)]
 pub struct Trade {
     pub buyer: Pubkey,
-    //pub seller: Pubkey,
-    //pub freight: Pubkey,
+    pub seller: Pubkey,
+    pub freight_verifier: Pubkey,
     pub mint_usd: Pubkey,
     pub amount: u64,
     pub document_hash: Option<[u8; 32]>,

@@ -15,4 +15,21 @@ pub enum TradeError {
 
     #[msg("Trade balance empty")]
     VaultBalanceMismatch,
+
+
+    #[msg("Cannot submit docs on no or empty trade")]
+    InvalidState,
+
+    #[msg("Documents already submitted")]
+    UnexpectedStateTransition,
+
+    #[msg("Documents have not been submitted")]
+    UnreadyState,
+
+    #[msg("Vault balance does not match escrow amount")]
+    VaultMismatch,
+
+    #[msg("No documents submitted")]
+    MissingDocuments,
+
 }

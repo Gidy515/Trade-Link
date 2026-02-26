@@ -12,6 +12,12 @@ pub struct Buy <'info> {
     #[account(mut)]
     pub buyer: Signer<'info>,
 
+    #[account(mut)]
+    pub seller: SystemAccount<'info>,
+
+    #[account(mut)]
+    pub freight_verifier: SystemAccount<'info>,
+
     #[account(
         mint::token_program = token_program
     )]
@@ -54,7 +60,9 @@ impl <'info> Buy<'info> {
         require!(amount > 0, TradeError::InvalidAmount);
 
         self.escrow.set_inner(Trade { 
-            buyer: self.buyer.key(),  
+            buyer: self.buyer.key(), 
+            seller: self.seller.key(), 
+            freight_verifier: self.freight_verifier.key(),
             mint_usd: self.mint_usd.key(), 
             amount, 
             document_hash: None, 
