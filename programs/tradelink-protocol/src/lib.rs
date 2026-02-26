@@ -19,6 +19,23 @@ pub mod tradelink_protocol {
         ctx.accounts.deposit(deposit)?;
         Ok(())
     }
+
+    pub fn cancel(ctx: Context<Cancel>) -> Result<()> {
+        ctx.accounts.refund_and_close()?;
+        Ok(())
+    }
+
+    pub fn sell(ctx: Context<Sell>, document_hash: [u8; 32]) -> Result<()> {
+        ctx.accounts.submit_documents(document_hash)?;
+        Ok(())
+    }
+
+    pub fn settlement(ctx: Context<VerifyAndSettle>) -> Result<()> {
+        ctx.accounts.reject_documents()?;
+        ctx.accounts.confirm_shipment_arrival()?;
+        ctx.accounts.settle_trade()?;
+        Ok(())
+    }
 }
 
 #[derive(Accounts)]

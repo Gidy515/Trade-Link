@@ -87,7 +87,7 @@ impl<'info> Sell<'info> {
 
 #[derive(Accounts)]
 #[instruction(seed: u64)]
-pub struct Verify<'info> {
+pub struct VerifyAndSettle<'info> {
     #[account(mut)]
     pub freight_verifier: Signer<'info>,
 
@@ -143,7 +143,7 @@ pub struct Verify<'info> {
     pub system_program: Program<'info, System>,
 }
 
-impl <'info> Verify<'info> {
+impl <'info> VerifyAndSettle<'info> {
     pub fn reject_documents(&mut self) -> Result<()> {
         require!(
             self.escrow.current_state == TradeState::DocumentsSubmitted,
