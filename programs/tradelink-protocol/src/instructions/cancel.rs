@@ -1,6 +1,8 @@
 use anchor_lang::prelude::*;
 
-use crate::Trade;
+use crate::{Trade, TradeState};
+use crate::error::TradeError;
+
 use anchor_spl::{associated_token::AssociatedToken, token_interface::{
         CloseAccount, Mint, TokenAccount, TokenInterface, TransferChecked, close_account, transfer_checked
     }
@@ -49,6 +51,24 @@ pub struct Cancel<'info> {
 
 impl <'info> Cancel<'info> {
     pub fn refund_and_close(&mut self) -> Result<()> {
+        // State Preconditions
+        require!(
+            self.escrow.current_state == TradeState::FundsLocked,
+            TradeError::UnexpectedState
+        );
+
+        require!(
+            self.escrow.document_hash.is_none(),
+            TradeError::InvalidStateTransition
+        );
+
+        require!(
+            self.vault.amount > 0,
+            TradeError::VaultBalanceMismatch
+        );
+
+        // Mark Cancelled BEFORE CPI
+        self.escrow.current_state = TradeState::Cancelled;
 
         let signer_seeds: [&[&[u8]]; 1] = [&[
             b"trade",
@@ -59,7 +79,7 @@ impl <'info> Cancel<'info> {
 
         let transfer_accounts = TransferChecked {
             from: self.vault.to_account_info(),
-            to: self.buyer.to_account_info(),
+            to: self.buyer_ata.to_account_info(),
             mint: self.mint_usd.to_account_info(),
             authority: self.escrow.to_account_info(),
         };
